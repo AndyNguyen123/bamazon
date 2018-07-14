@@ -68,10 +68,10 @@ function validateUserInput(productID, qtyPurchase) {
 function checkInventory(inputQty, invQty) {
     let isValid = false;
     if (inputQty > invQty) {
-        console.log('\nInsufficient Inventory!');
+        console.log('\nInsufficient Inventory!\n');
         isValid = false;
     } else {
-        console.log('\nProcessing Order....');
+        console.log('\nProcessing Order....\n');
         isValid = true;
     }
     return isValid;
@@ -101,7 +101,7 @@ function inquireLog(products) {
                     updateInventory(answer.pID, answer.qty);
                     showOrderDetail(productName, answer.qty, productPrice);
                     connection.end();
-                };
+                } else  inquireLog(products);
             } else inquireLog(products);
         })
         .catch(err => console.error(err));
