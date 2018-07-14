@@ -1,3 +1,4 @@
+//dependencies
 const mysql = require('mysql');
 const inquirer = require('inquirer');
 const { table } = require('table');
@@ -39,16 +40,15 @@ function updateInventory(productID, qtyPurchase) {
     SET stock_quantity = stock_quantity - ${qtyPurchase}
     WHERE item_id = ${productID}
 `;
-    connection.query(query, (error, results, fields) => {
+    return connection.query(query, (error, results, fields) => {
         if (error) throw error;
-        connection.end();
     });
 };
 
 function showOrderDetail(item, qtyPurchase, unitCost) {
     let data = [
         ['Item', 'Quantity', 'Unit Cost', 'Total'],
-        [item, qtyPurchase, unitCost, qtyPurchase*unitCost],
+        [item, qtyPurchase, unitCost, qtyPurchase * unitCost],
     ];
     let output = table(data);
     console.log(`
@@ -56,7 +56,28 @@ Here is your Order Detail:
 ${output}`);
 };
 
-function sellProducts(products) {
+function validateUserInput(productID, qtyPurchase) {
+    let isValid = false;
+    if (isNaN(productID) && isNaN(qtyPurchase)) console.log('\nProduct ID & Quantiy must be a number\n')
+    else if (isNaN(productID)) console.log('\nProduct ID must be a number\n')
+    else if (isNaN(qtyPurchase)) console.log('\nQuantity must be a number\n')
+    else isValid = true;
+    return isValid;
+};
+
+function checkInventory(inputQty, invQty) {
+    let isValid = false;
+    if (inputQty > invQty) {
+        console.log('\nInsufficient Inventory!');
+        isValid = false;
+    } else {
+        console.log('\nProcessing Order....');
+        isValid = true;
+    }
+    return isValid;
+};
+
+function inquireLog(products) {
     inquirer
         .prompt([
             {
@@ -69,24 +90,26 @@ function sellProducts(products) {
             },
         ])
         .then(answer => {
-            if (isNaN(answer.pID)) console.log('Err: Product ID must be a number')
-            else if (isNaN(answer.qty)) console.log('Err: Quantity must be a number');
-
-            let itemPurchased = products.find(product => product.item_id == answer.pID);
-            let itemQty = itemPurchased.stock_quantity;
-            let itemName = itemPurchased.product_name;
-            let unitCost = itemPurchased.price;
-            if (answer.qty > itemQty) console.log('Insufficient Inventory!')
-            else {
-                updateInventory(answer.pID, answer.qty);
-                showOrderDetail(itemName, answer.qty, unitCost);
-            }
-        });
+            const isInputValid = validateUserInput(answer.pID, answer.qty);
+            if (isInputValid) {
+                const productObj = products.find(product => product.item_id == answer.pID);
+                const productQty = productObj.stock_quantity;
+                const productName = productObj.product_name;
+                const productPrice = productObj.price;
+                const isOrderValid = checkInventory(answer.qty, productQty);
+                if (isOrderValid) {
+                    updateInventory(answer.pID, answer.qty);
+                    showOrderDetail(productName, answer.qty, productPrice);
+                    connection.end();
+                };
+            } else inquireLog(products);
+        })
+        .catch(err => console.error(err));
 };
 
 getAllProductInfo()
     .then(products => {
         displayProductInfo(products);
-        sellProducts(products);
+        inquireLog(products);
     })
     .catch(err => console.error(err));
