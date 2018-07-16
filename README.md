@@ -1,11 +1,16 @@
 # bamazon
+* To run this project, please clone the repo and navigate to its root.
+* `npm install` to install all the dependencies.
 ### bamazonCustomer.js
-* Running this app will display all the __product_id__, __product_name__ and __price__ of all products in store.
+To run this app, `node bamazonCustomer.js`
+* Display all the __product_id__, __product_name__ and __price__ of all products in store.
 * The customer/user would then be prompted to purchase by entering the __product_id__ and __quantity__ of the item.
 * The app will then display an order confirmation and decrease the input quantity in the database to reflect the purchase.
 
+![Alt Text](./bamazonCustomer.gif)
+
 ### bamazonManager.js
-Running this app will prompt multiple options for the manager/user to take:
+Running this app `node bamazonManager.js` will prompt multiple options for the manager/user to take:
 1. View Products for Sale
     * Displaying all information of every product in inventory
 2. View Low Inventory
@@ -16,3 +21,5 @@ Running this app will prompt multiple options for the manager/user to take:
     * Allow manager to add a completely new product by inputing the __product_name__, __price__, __cost of good sold__, and __quantity__
 5. Quit Application
     * Stop the application and disconnect from mysql database
+
+![Alt Text](./bamazonManager.gif)
