@@ -1,12 +1,14 @@
 //dependencies
 const mysql = require('mysql');
 const inquirer = require('inquirer');
-const { table } = require('table');
+const {
+    table
+} = require('table');
 
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '12345678',
+    password: '123456789',
     database: 'bamazon'
 });
 
@@ -23,12 +25,12 @@ function getAllProductInfo() {
 function displayProductInfo(products) {
     let data = [
         //headers of id, name and price
-        Object.keys(products[0]).filter(header => header === 'item_id' || header === 'product_name' || header === 'price'),
+        Object.keys(products[0]).filter(header => header === 'product_id' || header === 'product_name' || header === 'price'),
     ];
     //pushing product info to data
     products.forEach(obj => {
         let dataRow = [];
-        dataRow.push(obj.item_id, obj.product_name, obj.price);
+        dataRow.push(obj.product_id, obj.product_name, obj.price);
         data.push(dataRow);
     });
     let output = table(data);
@@ -37,8 +39,8 @@ function displayProductInfo(products) {
 
 function updateInventory(productID, qtyPurchase) {
     let query = `UPDATE products
-    SET stock_quantity = stock_quantity - ${qtyPurchase}
-    WHERE item_id = ${productID}
+    SET quantity = quantity - ${qtyPurchase}
+    WHERE product_id = ${productID}
 `;
     return connection.query(query, (error, results, fields) => {
         if (error) throw error;
@@ -79,8 +81,7 @@ function checkInventory(inputQty, invQty) {
 
 function inquireLog(products) {
     inquirer
-        .prompt([
-            {
+        .prompt([{
                 name: 'pID',
                 message: 'Please enter the product ID that you want to purchase:',
             },
@@ -92,8 +93,8 @@ function inquireLog(products) {
         .then(answer => {
             const isInputValid = validateUserInput(answer.pID, answer.qty);
             if (isInputValid) {
-                const productObj = products.find(product => product.item_id == answer.pID);
-                const productQty = productObj.stock_quantity;
+                const productObj = products.find(product => product.product_id == answer.pID);
+                const productQty = productObj.quantity;
                 const productName = productObj.product_name;
                 const productPrice = productObj.price;
                 const isOrderValid = checkInventory(answer.qty, productQty);
@@ -101,7 +102,7 @@ function inquireLog(products) {
                     updateInventory(answer.pID, answer.qty);
                     showOrderDetail(productName, answer.qty, productPrice);
                     connection.end();
-                } else  inquireLog(products);
+                } else inquireLog(products);
             } else inquireLog(products);
         })
         .catch(err => console.error(err));
