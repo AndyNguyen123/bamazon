@@ -39,7 +39,7 @@ function displayProductInfo(products) {
 
 function updateInventory(productID, qtyPurchase) {
     let query = `UPDATE products
-    SET quantity = quantity - ${qtyPurchase}
+    SET quantity = quantity - ${qtyPurchase}, quantity_sold = ifnull(quantity_sold,0) + ${qtyPurchase}
     WHERE product_id = ${productID}
 `;
     return connection.query(query, (error, results, fields) => {

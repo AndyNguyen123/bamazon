@@ -141,21 +141,21 @@ function runApp() {
                     viewProductForSale().then((status) => {
                         console.log(status);
                         runApp();
-                    });
+                    }).catch(err => console.error(err));
                     break;
                 case 'View Low Inventory':
                     viewLowInventory().then((status) => {
                         console.log(status);
                         runApp();
-                    });
+                    }).catch(err => console.error(err));
                     break;
                 case 'Add to Inventory':
                     promptToAddQty().then(answer => {
                         addToInventory(answer.pID, answer.qty).then((status) => {
                             console.log(status);
                             runApp();
-                        });
-                    });
+                        }).catch(err => console.error(err));
+                    }).catch(err => console.error(err));
                     break;
                 case 'Add New Product':
                     promptToAddProduct().then(answer => {
@@ -163,8 +163,8 @@ function runApp() {
                         addNewProduct(answer.productName, answer.price, answer.qty, answer.cost).then((status) => {
                             console.log(status);
                             runApp()
-                        });
-                    });
+                        }).catch(err => console.error(err));
+                    }).catch(err => console.error(err));
                     break;
                 case 'Quit Application':
                     stopApp();
